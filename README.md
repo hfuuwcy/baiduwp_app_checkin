@@ -66,6 +66,28 @@ copy config.example.json config.json
 如果 `/api/taskscore/tasksave` 在 Apifox 里成功、但脚本返回“参数错误”，通常是因为 `z` 和 `rand` / `rand2` / `time` / `rchannel` 属于同一组反作弊参数。把 Apifox 成功请求里的这些值放进该任务的 `extra_params`，脚本会用它们覆盖自动生成的动态值。
 脚本会按 Apifox 参数表的顺序发送 `tasksave` 请求：`uk`、`task_id`、`task_from`、`token`、`z`、`clienttype`、`channel`、`rand`、`rand2`、`time`、`cuid`、`devuid`、`version`、`versioncode`、`offlinepackage`、`themeinfo`、`rchannel`、`app`。
 
+如果还是参数错误，可以改用 raw 模式，直接复刻 Apifox 成功请求。把 Apifox 成功请求 URL 中 `?` 后面的完整查询串复制到 `raw_query`：
+
+```json
+{
+  "enabled": true,
+  "name": "App广告观看任务",
+  "raw_query": "uk=...&task_id=...&task_from=...&token=...&z=..."
+}
+```
+
+也可以直接配置完整 URL：
+
+```json
+{
+  "enabled": true,
+  "name": "App广告观看任务",
+  "raw_url": "https://pan.baidu.com/api/taskscore/tasksave?uk=...&task_id=..."
+}
+```
+
+配置了 `raw_url` 或 `raw_query` 后，脚本不会再自己拼任务参数，而是直接按你粘贴的 Apifox 请求发出。Cookie 仍然使用账号配置里的 `cookie`。
+
 邮箱配置单独放在 `email.json`：
 
 ```bash

@@ -64,6 +64,18 @@ class BaiduWPApp:
             data = None
         return response.status_code, data, text
 
+    def _get_raw_url(self, url: str, headers: dict[str, Any] | None = None) -> tuple[int, Any, str]:
+        request_headers = dict(self.headers)
+        if headers:
+            request_headers.update({str(key): str(value) for key, value in headers.items() if value is not None})
+        response = self.session.get(url, headers=request_headers, timeout=self.timeout)
+        text = response.text
+        try:
+            data = response.json()
+        except ValueError:
+            data = None
+        return response.status_code, data, text
+
     def _common_params(self) -> dict[str, Any]:
         missing = [key for key in ("z", "cuid", "devuid") if not self.app_config.get(key)]
         if missing:
@@ -219,6 +231,27 @@ class BaiduWPApp:
             raise ValueError(f"{label}失败: {status_code} {detail}")
         return data
 
+    def taskscore_save_raw(
+        self,
+        label: str,
+        raw_url: str | None = None,
+        raw_query: str | None = None,
+        headers: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        if raw_url:
+            url = raw_url
+        elif raw_query:
+            query = raw_query[1:] if raw_query.startswith("?") else raw_query
+            url = f"https://pan.baidu.com/api/taskscore/tasksave?{query}"
+        else:
+            raise ValueError(f"{label}缺少 raw_url 或 raw_query")
+
+        status_code, data, text = self._get_raw_url(url, headers=headers)
+        if status_code != 200 or not isinstance(data, dict):
+            detail = data if data is not None else text[:200]
+            raise ValueError(f"{label}失败: {status_code} {detail}")
+        return data
+
     @staticmethod
     def taskscore_status(label: str, result: dict[str, Any]) -> str:
         errno = result.get("errno")
@@ -267,14 +300,29 @@ class BaiduWPApp:
 
     def run_taskscore_task(self, task_config: dict[str, Any]) -> str:
         label = str(task_config.get("name") or "App任务上报")
+        delay_seconds = int(task_config.get("delay_seconds") or 0)
+        if delay_seconds > 0:
+            time.sleep(delay_seconds)
+
+        task_headers = task_config.get("headers")
+        if task_headers is not None and not isinstance(task_headers, dict):
+            return f"{label}: 已跳过，headers 必须是对象"
+
+        raw_url = task_config.get("raw_url")
+        raw_query = task_config.get("raw_query")
+        if raw_url or raw_query:
+            result = self.taskscore_save_raw(
+                label=label,
+                raw_url=str(raw_url) if raw_url else None,
+                raw_query=str(raw_query) if raw_query else None,
+                headers=task_headers,
+            )
+            return self.taskscore_status(label, result)
+
         task_id = task_config.get("task_id")
         task_from = task_config.get("task_from") or ["task_sys_task_growth"]
         if not task_id:
             return f"{label}: 已跳过，缺少 task_id"
-
-        delay_seconds = int(task_config.get("delay_seconds") or 0)
-        if delay_seconds > 0:
-            time.sleep(delay_seconds)
 
         extra_params = task_config.get("extra_params")
         if extra_params is not None and not isinstance(extra_params, dict):

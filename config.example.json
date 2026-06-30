@@ -32,6 +32,14 @@
             "time": "Apifox 成功请求里的 time",
             "rchannel": "Apifox 成功请求里的 rchannel"
           }
+        },
+        {
+          "enabled": false,
+          "name": "App广告观看任务 raw 模式",
+          "raw_query": "从 Apifox 成功请求 URL 中复制 ? 后面的完整查询串",
+          "headers": {
+            "Referer": "从 Apifox 成功请求复制，如没有可删除 headers"
+          }
         }
       ]
     }
