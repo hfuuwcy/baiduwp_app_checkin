@@ -179,15 +179,40 @@ class BaiduWPApp:
         label: str,
         extra_params: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        params = self._common_params()
+        common_params = self._common_params()
+        if extra_params:
+            common_params.update(extra_params)
         uk = self.app_config.get("uk")
         token = self.app_config.get("token")
         missing = [key for key, value in {"uk": uk, "token": token}.items() if not value]
         if missing:
             raise ValueError(f"{label}缺少配置: {', '.join(missing)}")
-        params.update({"task_id": task_id, "task_from": task_from, "uk": uk, "token": token})
-        if extra_params:
-            params.update(extra_params)
+
+        params: dict[str, Any] = {
+            "uk": uk,
+            "task_id": task_id,
+            "task_from": task_from,
+            "token": token,
+            "z": common_params.get("z"),
+            "clienttype": common_params.get("clienttype"),
+            "channel": common_params.get("channel"),
+            "rand": common_params.get("rand"),
+            "rand2": common_params.get("rand2"),
+            "time": common_params.get("time"),
+            "cuid": common_params.get("cuid"),
+            "devuid": common_params.get("devuid"),
+            "version": common_params.get("version"),
+            "versioncode": common_params.get("versioncode"),
+        }
+        if common_params.get("offlinepackage") is not None:
+            params["offlinepackage"] = common_params["offlinepackage"]
+        params.update(
+            {
+                "themeinfo": common_params.get("themeinfo"),
+                "rchannel": common_params.get("rchannel"),
+                "app": common_params.get("app"),
+            }
+        )
         status_code, data, text = self._get("/api/taskscore/tasksave", params)
         if status_code != 200 or not isinstance(data, dict):
             detail = data if data is not None else text[:200]

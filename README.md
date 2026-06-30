@@ -64,6 +64,7 @@ copy config.example.json config.json
 多个任务继续追加到 `taskscore_tasks`。`cookie`、`uk`、`token`、`z`、`cuid`、`devuid` 是账号级参数，会被同一账号下的多个任务共享。
 
 如果 `/api/taskscore/tasksave` 在 Apifox 里成功、但脚本返回“参数错误”，通常是因为 `z` 和 `rand` / `rand2` / `time` / `rchannel` 属于同一组反作弊参数。把 Apifox 成功请求里的这些值放进该任务的 `extra_params`，脚本会用它们覆盖自动生成的动态值。
+脚本会按 Apifox 参数表的顺序发送 `tasksave` 请求：`uk`、`task_id`、`task_from`、`token`、`z`、`clienttype`、`channel`、`rand`、`rand2`、`time`、`cuid`、`devuid`、`version`、`versioncode`、`offlinepackage`、`themeinfo`、`rchannel`、`app`。
 
 邮箱配置单独放在 `email.json`：
 
