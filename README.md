@@ -65,6 +65,7 @@ copy config.example.json config.json
 
 如果 `/api/taskscore/tasksave` 在 Apifox 里成功、但脚本返回“参数错误”，通常是因为 `z` 和 `rand` / `rand2` / `time` / `rchannel` 属于同一组反作弊参数。把 Apifox 成功请求里的这些值放进该任务的 `extra_params`，脚本会用它们覆盖自动生成的动态值。
 脚本会按 Apifox 参数表的顺序发送 `tasksave` 请求：`uk`、`task_id`、`task_from`、`token`、`z`、`clienttype`、`channel`、`rand`、`rand2`、`time`、`cuid`、`devuid`、`version`、`versioncode`、`offlinepackage`、`themeinfo`、`rchannel`、`app`。
+`task_from`、`channel` 这类单元素数组会按 Apifox 成功格式发送为单个字符串值，例如 `task_sys_task_growth`，不会发送成 `["task_sys_task_growth"]`。
 
 如果还是参数错误，可以改用 raw 模式，直接复刻 Apifox 成功请求。把 Apifox 成功请求 URL 中 `?` 后面的完整查询串复制到 `raw_query`：
 

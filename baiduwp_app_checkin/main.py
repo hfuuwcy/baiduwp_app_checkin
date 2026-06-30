@@ -40,7 +40,11 @@ class BaiduWPApp:
 
     @staticmethod
     def _param_value(value: Any) -> str:
-        if isinstance(value, (dict, list)):
+        if isinstance(value, list):
+            if len(value) == 1 and not isinstance(value[0], (dict, list)):
+                return str(value[0])
+            return json.dumps(value, ensure_ascii=False, separators=(",", ":"))
+        if isinstance(value, dict):
             return json.dumps(value, ensure_ascii=False, separators=(",", ":"))
         if isinstance(value, bool):
             return "true" if value else "false"
