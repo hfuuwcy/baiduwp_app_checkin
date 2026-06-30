@@ -25,7 +25,13 @@
           "task_from": [
             "task_sys_task_growth"
           ],
-          "delay_seconds": 0
+          "delay_seconds": 0,
+          "extra_params": {
+            "rand": "Apifox 成功请求里的 rand",
+            "rand2": "Apifox 成功请求里的 rand2",
+            "time": "Apifox 成功请求里的 time",
+            "rchannel": "Apifox 成功请求里的 rchannel"
+          }
         }
       ]
     }

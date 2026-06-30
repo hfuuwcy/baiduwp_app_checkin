@@ -172,7 +172,13 @@ class BaiduWPApp:
         show_msg = answer_info.get("show_msg") or ""
         return f"App每日答题: 提交完成，得分{answer_score or ''}{show_msg}，题目: {question}"
 
-    def taskscore_save(self, task_id: Any, task_from: Any, label: str) -> dict[str, Any]:
+    def taskscore_save(
+        self,
+        task_id: Any,
+        task_from: Any,
+        label: str,
+        extra_params: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         params = self._common_params()
         uk = self.app_config.get("uk")
         token = self.app_config.get("token")
@@ -180,6 +186,8 @@ class BaiduWPApp:
         if missing:
             raise ValueError(f"{label}缺少配置: {', '.join(missing)}")
         params.update({"task_id": task_id, "task_from": task_from, "uk": uk, "token": token})
+        if extra_params:
+            params.update(extra_params)
         status_code, data, text = self._get("/api/taskscore/tasksave", params)
         if status_code != 200 or not isinstance(data, dict):
             detail = data if data is not None else text[:200]
@@ -243,7 +251,16 @@ class BaiduWPApp:
         if delay_seconds > 0:
             time.sleep(delay_seconds)
 
-        result = self.taskscore_save(task_id=task_id, task_from=task_from, label=label)
+        extra_params = task_config.get("extra_params")
+        if extra_params is not None and not isinstance(extra_params, dict):
+            return f"{label}: 已跳过，extra_params 必须是对象"
+
+        result = self.taskscore_save(
+            task_id=task_id,
+            task_from=task_from,
+            label=label,
+            extra_params=extra_params,
+        )
         return self.taskscore_status(label, result)
 
     def run_taskscore_tasks(self) -> list[str]:
