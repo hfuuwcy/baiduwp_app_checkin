@@ -1,0 +1,15 @@
+[project]
+name = "baiduwp-app-checkin"
+version = "0.1.0"
+description = "Baidu Netdisk app task check-in"
+requires-python = ">=3.9"
+dependencies = [
+    "requests~=2.25.1",
+]
+
+[project.scripts]
+baiduwp-app-checkin = "baiduwp_app_checkin.main:main"
+
+[tool.ruff]
+line-length = 120
+target-version = "py39"

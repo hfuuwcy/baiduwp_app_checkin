@@ -1,0 +1,33 @@
+{
+  "BAIDUWP_APP": [
+    {
+      "cookie": "BDUSS=xxxxxx; STOKEN=xxxxxx; ...",
+      "enabled": true,
+      "z": "从 App 抓包参数复制",
+      "cuid": "从 App 抓包参数复制",
+      "devuid": "从 App 抓包参数复制",
+      "channel": [
+        "android_15_xxx_bd-netdisk_xxx"
+      ],
+      "version": "13.20.7",
+      "versioncode": "4062",
+      "clienttype": "1",
+      "coin_sign_task_id": "3434916321758720",
+      "coin_sign_task_from": "task_sys_daily",
+      "is_growth": 1,
+      "uk": "从 /api/taskscore/tasksave 的 uk 参数复制",
+      "token": "从 /api/taskscore/tasksave 的 token 参数复制",
+      "taskscore_tasks": [
+        {
+          "enabled": true,
+          "name": "App广告观看任务",
+          "task_id": "3434632741761030",
+          "task_from": [
+            "task_sys_task_growth"
+          ],
+          "delay_seconds": 0
+        }
+      ]
+    }
+  ]
+}

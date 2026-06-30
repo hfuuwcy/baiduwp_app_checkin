@@ -1,0 +1,48 @@
+name: BaiduWP App Checkin
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 07:30 Asia/Shanghai. GitHub Actions cron uses UTC.
+    - cron: "30 23 * * *"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: baiduwp-app-checkin
+  cancel-in-progress: false
+
+jobs:
+  checkin:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      TZ: Asia/Shanghai
+      BAIDUWP_APP_CONFIG: ${{ secrets.BAIDUWP_APP_CONFIG }}
+      BAIDUWP_APP_EMAIL_CONFIG: ${{ secrets.BAIDUWP_APP_EMAIL_CONFIG }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Validate secret configuration
+        run: |
+          if [ -z "$BAIDUWP_APP_CONFIG" ]; then
+            echo "Missing secret: set BAIDUWP_APP_CONFIG for App account JSON."
+            exit 1
+          fi
+
+      - name: Run app checkin
+        run: python -m baiduwp_app_checkin
