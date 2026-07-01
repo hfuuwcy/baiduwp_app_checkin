@@ -476,7 +476,6 @@ def main() -> None:
             ).run()
             content_list.append(f"百度网盘 App 账号 {index}\n{result}")
             LOGGER.info("百度网盘 App 账号 %s 执行完成\n%s", index, result)
-            print(result)
         except Exception as exc:
             content_list.append(f"百度网盘 App 账号 {index}\n执行失败: {exc}")
             LOGGER.exception("百度网盘 App 账号 %s 执行失败", index)
