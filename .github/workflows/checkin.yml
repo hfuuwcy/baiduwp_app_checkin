@@ -45,4 +45,26 @@ jobs:
           fi
 
       - name: Run app checkin
-        run: python -m baiduwp_app_checkin
+        shell: bash
+        run: |
+          run_checkin() {
+            python -m baiduwp_app_checkin 2>&1 | tee app-checkin-output.log
+            return "${PIPESTATUS[0]}"
+          }
+
+          set +e
+          run_checkin
+          status="$?"
+
+          if [ "$status" -ne 0 ] || grep -q "update task repeat" app-checkin-output.log; then
+            echo "Detected failed status or update task repeat, retrying once after 30 seconds..."
+            sleep 30
+
+            run_checkin
+            retry_status="$?"
+
+            if [ "$retry_status" -ne 0 ] || grep -q "update task repeat" app-checkin-output.log; then
+              echo "Retry still failed or matched update task repeat."
+              exit 1
+            fi
+          fi
